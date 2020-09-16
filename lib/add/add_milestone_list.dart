@@ -1,14 +1,14 @@
-import 'dart:math';
-
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:goald/add/add_milestone_tile.dart';
-import 'package:goald/add/remove_milestone_tile.dart';
-import 'package:goald/milestone_divider.dart';
-import 'package:goald/milestone_tile.dart';
+import 'package:goald/add/new_milestone_tile.dart';
 import 'package:goald/models/milestone.dart';
+import 'package:goald/reorderable_column.dart';
 
 class AddMilestoneList extends StatefulWidget {
+  final Function(List<Milestone>) onUpdate;
+
+  AddMilestoneList({this.onUpdate});
+
   @override
   _AddMilestoneListState createState() => _AddMilestoneListState();
 }
@@ -20,10 +20,14 @@ class _AddMilestoneListState extends State<AddMilestoneList> {
     final children = <Widget>[];
 
     _milestones.forEach((milestone) {
-      children.add(RemoveMilestoneTile(
+      children.add(NewMilestoneTile(
         data: milestone,
         single: false,
-        triggerDelete: (milestone) => setState(() => _milestones.remove(milestone)),
+        triggerDelete: (milestone) => setState(() {
+          _milestones.remove(milestone);
+          widget.onUpdate(_milestones);
+        }),
+        onUpdate: (val) => setState(() => milestone.milestone = val),
       ));
     });
 
@@ -32,26 +36,26 @@ class _AddMilestoneListState extends State<AddMilestoneList> {
         single: children.length == 0,
         onClick: () => {
           setState(() {
-            this._milestones.add(Milestone(done: false, milestone: ''));
+            _milestones.add(Milestone(done: false, milestone: ''));
+            widget.onUpdate(_milestones);
           })
         },
       ),
     );
 
-    return ColumnSuper(
+    return ReorderableColumn(
       children: children,
-      alignment: Alignment.centerLeft,
-      innerDistance: -4.0,
+      onReorder: (oldIndex, newIndex) {
+        setState(() {
+          var c = children.removeAt(oldIndex);
+          children.insert(newIndex, c);
+        });
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 12),
-      child: SizedBox(
-        child: _buildColumn(),
-      ),
-    );
+    return Container(margin: EdgeInsets.only(top: 12), child: _buildColumn());
   }
 }

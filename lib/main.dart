@@ -4,8 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:goald/home/home.dart';
+import 'package:goald/service-locator.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  setupServiceLocator();
+  runApp(new MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override

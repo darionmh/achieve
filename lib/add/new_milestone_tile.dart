@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:goald/models/milestone.dart';
 import 'package:goald/painters/line_painter.dart';
 
-class RemoveMilestoneTile extends StatefulWidget {
+class NewMilestoneTile extends StatefulWidget {
   final Milestone data;
   final bool single;
   final Function triggerDelete;
+  final Function(String) onUpdate;
 
-  const RemoveMilestoneTile({key, @required this.data, this.single = true, this.triggerDelete})
+  const NewMilestoneTile({key, @required this.data, this.single = true, this.triggerDelete, this.onUpdate})
       : super(key: key);
 
   @override
-  _RemoveMilestoneTileState createState() => _RemoveMilestoneTileState();
+  _NewMilestoneTileState createState() => _NewMilestoneTileState();
 }
 
-class _RemoveMilestoneTileState extends State<RemoveMilestoneTile> {
+class _NewMilestoneTileState extends State<NewMilestoneTile> {
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
@@ -44,7 +45,9 @@ class _RemoveMilestoneTileState extends State<RemoveMilestoneTile> {
                     // onTap: () => setState(() => widget.data.done = !widget.data.done),
                   ),
                 ),
+                onChanged: (val) => widget.onUpdate(val),
               ),
+              // child: Text(widget.data.milestone),
             ),
           ),
         ],

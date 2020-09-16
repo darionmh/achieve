@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:goald/home/milestone_list.dart';
+import 'package:goald/models/goal.dart';
 
 class GoalTile extends StatefulWidget {
+  final Goal goal;
+
+  const GoalTile({Key key, this.goal}) : super(key: key);
+
   @override
   _GoalTileState createState() => _GoalTileState();
 }
@@ -35,16 +40,16 @@ class _GoalTileState extends State<GoalTile> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Title'),
-                  Text('Subtitle'),
-                  MilestoneList(),
+                  Text(widget.goal.title),
+                  Text(widget.goal.goal),
+                  MilestoneList(milestones: widget.goal.milestones),
                 ],
               ),
             ),
           ),
           Container(
             padding: EdgeInsets.only(top: 12),
-            child: Text('10/10/2020'),
+            child: Text(widget.goal.endDate),
           ),
         ],
       ),
