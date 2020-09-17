@@ -15,8 +15,6 @@ class _ReorderableColumnState extends State<ReorderableColumn> {
   Widget _currentlyMoving;
 
   void _handleMove(LongPressMoveUpdateDetails details) {
-    print(widget.children);
-
     var index = widget.children.indexOf(_currentlyMoving);
     if (details.localOffsetFromOrigin.dy <= -50 && index > 0) {
       widget.onReorder(index, index - 1);

@@ -16,6 +16,20 @@ class NewMilestoneTile extends StatefulWidget {
 }
 
 class _NewMilestoneTileState extends State<NewMilestoneTile> {
+  FocusNode f = FocusNode();
+
+  @override
+  void initState() {
+    f.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    f.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
@@ -45,6 +59,7 @@ class _NewMilestoneTileState extends State<NewMilestoneTile> {
                     // onTap: () => setState(() => widget.data.done = !widget.data.done),
                   ),
                 ),
+                focusNode: f,
                 onChanged: (val) => widget.onUpdate(val),
               ),
               // child: Text(widget.data.milestone),

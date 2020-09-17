@@ -14,12 +14,6 @@ class MilestoneList extends StatefulWidget {
 }
 
 class _MilestoneListState extends State<MilestoneList> {
-
-  void initState() {
-    super.initState();
-
-    print(widget.milestones);
-  }
   
   Widget _buildColumn() {
     final children = <Widget>[];

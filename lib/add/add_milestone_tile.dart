@@ -3,7 +3,7 @@ import 'package:goald/painters/line_painter.dart';
 
 class AddMilestoneTile extends StatefulWidget {
   final bool single;
-  final VoidCallback onClick;
+  final Function(BuildContext) onClick;
 
   const AddMilestoneTile(
       {key, this.single = true, this.onClick})
@@ -31,7 +31,9 @@ class _AddMilestoneTileState extends State<AddMilestoneTile> {
           ),
           GestureDetector(
             child: Icon(Icons.add_circle),
-            onTap: () => widget.onClick(),
+            onTap: () {
+              widget.onClick(context);
+            }
           ),
         ],
       ),

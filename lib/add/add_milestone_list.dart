@@ -26,6 +26,7 @@ class _AddMilestoneListState extends State<AddMilestoneList> {
         triggerDelete: (milestone) => setState(() {
           _milestones.remove(milestone);
           widget.onUpdate(_milestones);
+          FocusScope.of(context).unfocus();
         }),
         onUpdate: (val) => setState(() => milestone.milestone = val),
       ));
@@ -34,10 +35,13 @@ class _AddMilestoneListState extends State<AddMilestoneList> {
     children.add(
       AddMilestoneTile(
         single: children.length == 0,
-        onClick: () => {
+        onClick: (context) => {
           setState(() {
-            _milestones.add(Milestone(done: false, milestone: ''));
-            widget.onUpdate(_milestones);
+            if (_milestones.length == 0 || _milestones.last.milestone != '') {
+              _milestones.add(Milestone(done: false, milestone: ''));
+              widget.onUpdate(_milestones);
+              Scrollable.ensureVisible(context);
+            }
           })
         },
       ),

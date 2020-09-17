@@ -42,7 +42,7 @@ class _GoalListState extends State<GoalList> {
       );
     }
     return Center(
-      child: Text('Click the + below to add a goal to get started!'),
+      child: Text('Click the + below to add a goal and get started!'),
     );
   }
 }
