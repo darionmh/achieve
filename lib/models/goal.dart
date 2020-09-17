@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:goald/models/milestone.dart';
+import 'package:uuid/uuid.dart';
 
 class Goal {
+  final id = Uuid().v4();
   String title;
   String goal;
   String endDate;

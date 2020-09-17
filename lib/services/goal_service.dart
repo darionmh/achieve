@@ -6,8 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AbstractGoalService {
   Future<List<Goal>> getGoals();
-  void save(Goal goal);
+  void add(Goal goal);
   void delete(Goal goal);
+  void update(Goal goal);
 }
 
 class GoalService implements AbstractGoalService {
@@ -34,7 +35,7 @@ class GoalService implements AbstractGoalService {
   }
 
   @override
-  void save(Goal goal) async {
+  void add(Goal goal) async {
     _goalStore.add(goal);
     await updateGoalStore();
     goalChangedEvent.broadcast(GoalChangedEventArgs(_goalStore));
@@ -54,6 +55,18 @@ class GoalService implements AbstractGoalService {
 
   Future<SharedPreferences> _prefs() async {
     return SharedPreferences.getInstance();
+  }
+
+  @override
+  void update(Goal goal) async {
+    final i = _goalStore.indexWhere((Goal element) => element.id == goal.id);
+    if (i >= 0) {
+      _goalStore[i] = goal;
+      await updateGoalStore();
+      goalChangedEvent.broadcast(GoalChangedEventArgs(_goalStore));
+    } else {
+      add(goal);
+    }
   }
 }
 

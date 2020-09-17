@@ -6,15 +6,16 @@ import 'package:goald/models/milestone.dart';
 
 class MilestoneList extends StatefulWidget {
   final List<Milestone> milestones;
+  final Function(Milestone) onUpdate;
 
-  const MilestoneList({Key key, this.milestones}) : super(key: key);
+  const MilestoneList({Key key, this.milestones, this.onUpdate})
+      : super(key: key);
 
   @override
   _MilestoneListState createState() => _MilestoneListState();
 }
 
 class _MilestoneListState extends State<MilestoneList> {
-  
   Widget _buildColumn() {
     final children = <Widget>[];
 
@@ -26,6 +27,7 @@ class _MilestoneListState extends State<MilestoneList> {
         data: milestone,
         isLast: isLast,
         single: widget.milestones.length == 1,
+        onUpdate: (milestone) => widget.onUpdate(milestone),
       ));
 
       if (!isLast) {

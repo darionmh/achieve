@@ -20,7 +20,7 @@ class _AddGoalState extends State<AddGoal> {
 
   void _save(context) {
     setState(() {
-      _goalService.save(Goal(
+      _goalService.add(Goal(
           title: _title,
           goal: _goal,
           endDate: _endDate,

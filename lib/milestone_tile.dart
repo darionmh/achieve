@@ -6,9 +6,14 @@ class MilestoneTile extends StatefulWidget {
   final Milestone data;
   final bool isLast;
   final bool single;
+  final Function(Milestone) onUpdate;
 
   const MilestoneTile(
-      {key, @required this.data, this.isLast = false, this.single = true})
+      {key,
+      @required this.data,
+      this.isLast = false,
+      this.single = true,
+      this.onUpdate})
       : super(key: key);
 
   @override
@@ -35,7 +40,10 @@ class _MilestoneTileState extends State<MilestoneTile> {
             child: Icon(widget.data.done
                 ? Icons.radio_button_checked
                 : Icons.radio_button_unchecked),
-            onTap: () => setState(() => widget.data.done = !widget.data.done),
+            onTap: () => setState(() {
+              widget.data.done = !widget.data.done;
+              widget.onUpdate(widget.data);
+            }),
           ),
           Flexible(
             child: Container(
