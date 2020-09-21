@@ -6,6 +6,10 @@ import 'package:goald/service-locator.dart';
 import 'package:goald/services/goal_service.dart';
 
 class AddGoal extends StatefulWidget {
+  final Goal data;
+
+  const AddGoal({Key key, this.data}) : super(key: key);
+
   @override
   _AddGoalState createState() => _AddGoalState();
 }
@@ -15,16 +19,39 @@ class _AddGoalState extends State<AddGoal> {
 
   var _title = '';
   var _goal = '';
-  var _endDate = '${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().year}';
+  var _endDate =
+      '${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().year}';
   var _milestoneList = <Milestone>[];
+
+  @override
+  void initState() {
+    if (widget.data != null) {
+      _title = widget.data.title;
+      _goal = widget.data.goal;
+      _endDate = widget.data.endDate;
+      _milestoneList = widget.data.milestones;
+    }
+
+    super.initState();
+  }
 
   void _save(context) {
     setState(() {
-      _goalService.add(Goal(
-          title: _title,
-          goal: _goal,
-          endDate: _endDate,
-          milestones: _milestoneList));
+      if (widget.data != null) {
+        _goalService.add(Goal(
+            title: _title,
+            goal: _goal,
+            endDate: _endDate,
+            milestones: _milestoneList));
+      } else {
+        widget.data.title = _title;
+        widget.data.goal = _goal;
+        widget.data.endDate = _endDate;
+        widget.data.milestones = _milestoneList;
+
+        _goalService.update(widget.data);
+      }
+
       Navigator.of(context).pop();
     });
   }
