@@ -15,7 +15,7 @@ class AddGoal extends StatefulWidget {
 }
 
 class _AddGoalState extends State<AddGoal> {
-  GoalService _goalService = locator<AbstractGoalService>();
+  AbstractGoalService _goalService = locator<AbstractGoalService>();
 
   var _title = '';
   var _goal = '';
@@ -37,7 +37,7 @@ class _AddGoalState extends State<AddGoal> {
 
   void _save(context) {
     setState(() {
-      if (widget.data != null) {
+      if (widget.data == null) {
         _goalService.add(Goal(
             title: _title,
             goal: _goal,
@@ -63,14 +63,17 @@ class _AddGoalState extends State<AddGoal> {
         toolbarHeight: 0,
       ),
       body: Container(
-        padding: EdgeInsets.all(30),
+        padding: EdgeInsets.only(left: 15, right: 15),
         child: ListView(
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
           children: [
             Column(
               children: [
-                Text('Create New Goal'),
+                Container(
+                  child: Text('Create New Goal'),
+                  margin: EdgeInsets.only(top: 15),
+                ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Title'),
                   onChanged: (val) => _title = val,

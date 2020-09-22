@@ -15,7 +15,7 @@ class GoalTile extends StatefulWidget {
 }
 
 class _GoalTileState extends State<GoalTile> {
-  GoalService _goalService = locator<AbstractGoalService>();
+  AbstractGoalService _goalService = locator<AbstractGoalService>();
 
   List<Widget> _buildChildren() {
     final children = <Widget>[];

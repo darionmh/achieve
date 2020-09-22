@@ -2,10 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:goald/models/milestone.dart';
-import 'package:uuid/uuid.dart';
 
 class Goal {
-  final id = Uuid().v4();
+  String id;
   String title;
   String goal;
   String endDate;
@@ -13,7 +12,8 @@ class Goal {
   List<Milestone> milestones;
 
   Goal(
-      {@required this.title,
+      {this.id,
+      @required this.title,
       this.goal,
       this.endDate,
       this.milestones,

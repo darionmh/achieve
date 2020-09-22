@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:goald/home/home.dart';
 import 'package:goald/service-locator.dart';
+import 'package:goald/services/auth_service.dart';
 
 void main() {
   setupServiceLocator();
-  runApp(new MyApp());
+  runApp(new App());
 }
 
 class MyApp extends StatefulWidget {
@@ -17,12 +19,25 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  AbstractAuthService _authService = locator<AbstractAuthService>();
+
+  @override
+  void dispose() {
+    // _authService.signOut();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Goal\'d',
       routes: <String, WidgetBuilder>{},
-      home: Home(),
+      home: Scaffold(
+        body: Container(
+          child: _authService.getSignInState(),
+        ),
+      ),
       theme: ThemeData(
         primaryColor: Colors.purple[900],
         buttonColor: Colors.purple[900],
@@ -39,5 +54,26 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: Firebase.initializeApp(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return MaterialApp(home: Center(child: Text('Oops!')));
+          }
+
+          // Once complete, show your application
+          if (snapshot.connectionState == ConnectionState.done) {
+            return MyApp();
+          }
+
+          // Otherwise, show something whilst waiting for initialization to complete
+          return MaterialApp(home: Center(child: Text('loading...')));
+        });
   }
 }
