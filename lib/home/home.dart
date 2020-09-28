@@ -14,10 +14,23 @@ class _HomeState extends State<Home> {
   AbstractAuthService _authService = locator<AbstractAuthService>();
 
   @override
+  void initState() {
+    _authService.getUser().reload();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    await _authService.signOut();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hello, ${_authService.getUser().displayName}'),
+        title: _authService.getUserState(),
         centerTitle: false,
         actions: [
           IconButton(

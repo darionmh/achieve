@@ -107,7 +107,7 @@ class _AddGoalState extends State<AddGoal> {
                       child: Text('Cancel'),
                       onPressed: () => Navigator.of(context).pop(),
                       color: Colors.white,
-                      textColor: Colors.purple[900],
+                      textColor: Color.fromARGB(255, 44, 62, 80),
                     ),
                     RaisedButton(
                       child: Text('Save'),

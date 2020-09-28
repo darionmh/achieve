@@ -5,6 +5,7 @@ import 'package:goald/onboarding/sign_in.dart';
 
 abstract class AbstractAuthService {
   StreamBuilder<User> getSignInState();
+  StreamBuilder<User> getUserState();
   Future<SignInStatus> signInWithEmail(String email, String password);
   Future<RegisterStatus> registerWithEmail(String email, String password, String displayName);
   User getUser();
@@ -64,7 +65,10 @@ class AuthService implements AbstractAuthService {
     try {
       UserCredential user = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
+
       await user.user.updateProfile(displayName: displayName);
+      await auth.currentUser.reload();
+
       return RegisterStatus.success;
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -86,6 +90,24 @@ class AuthService implements AbstractAuthService {
   @override
   Future<void> signOut() {
     return auth.signOut();
+  }
+
+  @override
+  StreamBuilder<User> getUserState() {
+    return StreamBuilder<User>(
+      stream: auth.userChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Hello');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("Hello");
+        }
+
+        return Text('Hello ${auth.currentUser.displayName}');
+      },
+    );
   }
 }
 

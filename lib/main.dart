@@ -34,23 +34,26 @@ class _MyAppState extends State<MyApp> {
       title: 'Goal\'d',
       routes: <String, WidgetBuilder>{},
       home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 44, 62, 80), // status bar color
+          brightness: Brightness.dark, // status bar brightness
+          toolbarHeight: 0,
+        ),
         body: Container(
           child: _authService.getSignInState(),
         ),
       ),
       theme: ThemeData(
-        primaryColor: Colors.purple[900],
-        buttonColor: Colors.purple[900],
+        primaryColor: Color.fromARGB(255, 44, 62, 80),
+        buttonTheme: ButtonThemeData(
+          buttonColor: Color.fromARGB(255, 44, 62, 80),
+          textTheme: ButtonTextTheme.primary,
+        ),
         iconTheme: IconThemeData(
-          color: Colors.purple[900],
+          color: Color.fromARGB(255, 44, 62, 80),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.purple[900],
-        ),
-        colorScheme: ColorScheme.light(
-          primary: Colors.purple[900],
-          onPrimary: Colors.white,
-          onSecondary: Colors.white,
+          backgroundColor: Color.fromARGB(255, 44, 62, 80),
         ),
       ),
     );
