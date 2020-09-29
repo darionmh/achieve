@@ -9,6 +9,7 @@ abstract class AbstractGoalService {
   Future<void> add(Goal goal);
   Future<void> delete(Goal goal);
   Future<void> update(Goal goal);
+  Stream<List<Goal>> allGoals();
   Stream<List<Goal>> upcomingGoals();
   Stream<List<Goal>> recentlyCompleted();
 }
@@ -69,6 +70,13 @@ class GoalStore implements AbstractGoalService {
       'done': milestone.done,
       'description': milestone.description,
     };
+  }
+
+  @override
+  Stream<List<Goal>> allGoals() {
+    return _goalCollection().snapshots().map((event) => event.docs == null
+        ? []
+        : event.docs.map((e) => Goal.fromSnapshot(e)).toList());
   }
 
   @override

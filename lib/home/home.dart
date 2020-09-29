@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:goald/add/add_goal.dart';
+import 'package:goald/full_list.dart';
 import 'package:goald/home/dashboard.dart';
 import 'package:goald/home/recent.dart';
 import 'package:goald/home/upcoming.dart';
 import 'package:goald/models/goal.dart';
 import 'package:goald/navigation.dart';
 import 'package:goald/service-locator.dart';
-import 'package:goald/services/auth_service.dart';
 import 'package:goald/services/goal_service.dart';
 import 'package:goald/styles.dart';
 import 'package:provider/provider.dart';
@@ -19,9 +19,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   AbstractGoalService _goalService = locator<AbstractGoalService>();
-  AbstractAuthService _authService = locator<AbstractAuthService>();
 
-  var _currentIndex = 0;
+  var _currentIndex = 1;
 
   Widget home;
 
@@ -50,11 +49,16 @@ class _HomeState extends State<Home> {
         Dashboard(),
         StreamProvider<List<Goal>>(
           create: (_) => _goalService.upcomingGoals(),
+          initialData: [],
           child: Upcoming(
             onClick: () => setState(() => _currentIndex = 1),
           ),
         ),
-        // RecentlyCompleted(),
+        StreamProvider<List<Goal>>(
+          create: (_) => _goalService.recentlyCompleted(),
+          initialData: [],
+          child: RecentlyCompleted(),
+        ),
       ],
     );
   }
@@ -63,6 +67,12 @@ class _HomeState extends State<Home> {
     switch (_currentIndex) {
       case 0:
         return _buildHome(user);
+      case 1:
+        return StreamProvider<List<Goal>>(
+          create: (_) => _goalService.allGoals(),
+          initialData: [],
+          child: FullGoalList(),
+        );
       case 2:
         return AddGoal(
           onFinish: () => setState(() => _currentIndex = 0),
@@ -76,7 +86,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-
     var user = Provider.of<User>(context);
 
     return Scaffold(

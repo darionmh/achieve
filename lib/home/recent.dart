@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:goald/components/goal_card.dart';
 import 'package:goald/models/goal.dart';
-import 'package:goald/service-locator.dart';
-import 'package:goald/services/goal_service.dart';
 import 'package:goald/styles.dart';
+import 'package:provider/provider.dart';
 
 class RecentlyCompleted extends StatefulWidget {
   @override
@@ -11,16 +10,17 @@ class RecentlyCompleted extends StatefulWidget {
 }
 
 class _RecentlyCompletedState extends State<RecentlyCompleted> {
-  AbstractGoalService _goalService = locator<AbstractGoalService>();
 
-  var recentGoals = <Goal>[];
+  List _buildRecentGoals(goals) {
+    if(goals == null) return [];
 
-  List<Widget> _buildRecentGoals() {
-    return recentGoals.map((e) => GoalCard(goal: e)).toList();
+    return goals.map((e) => GoalCard(goal: e)).toList();
   }
   
   @override
   Widget build(BuildContext context) {
+    var goals = Provider.of<List<Goal>>(context);
+
     return Container(
       margin: EdgeInsets.only(bottom: 25),
       child: Column(
@@ -33,7 +33,7 @@ class _RecentlyCompletedState extends State<RecentlyCompleted> {
               style: subheading,
             ),
           ),
-          ..._buildRecentGoals()
+          ..._buildRecentGoals(goals)
         ],
       ),
     );
