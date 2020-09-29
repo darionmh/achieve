@@ -18,6 +18,7 @@ class _GoalListState extends State<GoalList> {
   Widget build(BuildContext context) {
     if (widget.goalList != null && widget.goalList.length > 0) {
       return ListView.builder(
+        // shrinkWrap: true,
         itemCount: widget.goalList.length * 2,
         itemBuilder: (context, i) {
           if (i.isOdd) {

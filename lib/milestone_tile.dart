@@ -49,7 +49,7 @@ class _MilestoneTileState extends State<MilestoneTile> {
             child: Container(
               margin: EdgeInsets.only(left: 12, right: 12),
               child: Text(
-                widget.data.milestone,
+                widget.data.description,
                 // overflow: TextOverflow.ellipsis,
               ),
             ),

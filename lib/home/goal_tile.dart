@@ -20,7 +20,7 @@ class _GoalTileState extends State<GoalTile> {
   List<Widget> _buildChildren() {
     final children = <Widget>[];
     children.add(Text(widget.goal.title));
-    if (widget.goal.goal != '') children.add(Text(widget.goal.goal));
+    if (widget.goal.description != '') children.add(Text(widget.goal.description));
     if (widget.goal.milestones.length > 0)
       children.add(MilestoneList(
         milestones: widget.goal.milestones,
@@ -91,7 +91,7 @@ class _GoalTileState extends State<GoalTile> {
             ),
             Container(
               padding: EdgeInsets.only(top: 12),
-              child: Text(widget.goal.endDate),
+              child: Text(widget.goal.endDate.toString()),
             ),
           ],
         ),

@@ -7,8 +7,9 @@ import 'package:goald/services/goal_service.dart';
 
 class AddGoal extends StatefulWidget {
   final Goal data;
+  final VoidCallback onFinish;
 
-  const AddGoal({Key key, this.data}) : super(key: key);
+  const AddGoal({Key key, this.data, this.onFinish}) : super(key: key);
 
   @override
   _AddGoalState createState() => _AddGoalState();
@@ -19,15 +20,14 @@ class _AddGoalState extends State<AddGoal> {
 
   var _title = '';
   var _goal = '';
-  var _endDate =
-      '${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().year}';
+  var _endDate = DateTime.now();
   var _milestoneList = <Milestone>[];
 
   @override
   void initState() {
     if (widget.data != null) {
       _title = widget.data.title;
-      _goal = widget.data.goal;
+      _goal = widget.data.description;
       _endDate = widget.data.endDate;
       _milestoneList = widget.data.milestones;
     }
@@ -40,19 +40,19 @@ class _AddGoalState extends State<AddGoal> {
       if (widget.data == null) {
         _goalService.add(Goal(
             title: _title,
-            goal: _goal,
+            description: _goal,
             endDate: _endDate,
             milestones: _milestoneList));
       } else {
         widget.data.title = _title;
-        widget.data.goal = _goal;
+        widget.data.description = _goal;
         widget.data.endDate = _endDate;
         widget.data.milestones = _milestoneList;
 
         _goalService.update(widget.data);
       }
 
-      Navigator.of(context).pop();
+      widget.onFinish();
     });
   }
 
@@ -91,7 +91,7 @@ class _AddGoalState extends State<AddGoal> {
                   firstDate: DateTime.now().subtract(Duration(days: 365 * 100)),
                   lastDate: DateTime.now().add(Duration(days: 365 * 100)),
                   onDateChanged: (date) =>
-                      _endDate = '${date.month}/${date.day}/${date.year}',
+                      _endDate = date,
                 ),
                 Divider(
                   height: 32,
@@ -105,7 +105,7 @@ class _AddGoalState extends State<AddGoal> {
                   children: [
                     RaisedButton(
                       child: Text('Cancel'),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () => widget.onFinish(),
                       color: Colors.white,
                       textColor: Color.fromARGB(255, 44, 62, 80),
                     ),

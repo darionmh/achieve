@@ -1,13 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:goald/home/home.dart';
-import 'package:goald/onboarding/sign_in.dart';
 
 abstract class AbstractAuthService {
-  StreamBuilder<User> getSignInState();
-  StreamBuilder<User> getUserState();
   Future<SignInStatus> signInWithEmail(String email, String password);
-  Future<RegisterStatus> registerWithEmail(String email, String password, String displayName);
+  Future<RegisterStatus> registerWithEmail(
+      String email, String password, String displayName);
   User getUser();
   Future<void> signOut();
 }
@@ -20,32 +16,9 @@ class AuthService implements AbstractAuthService {
   }
 
   @override
-  StreamBuilder<User> getSignInState() {
-    return StreamBuilder<User>(
-      stream: auth.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
-        }
-
-        if (snapshot.data == null) {
-          return SignIn();
-        } else {
-          return Home();
-        }
-      },
-    );
-  }
-
-  @override
   Future<SignInStatus> signInWithEmail(String email, String password) async {
     try {
-      await auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      await auth.signInWithEmailAndPassword(email: email, password: password);
       return SignInStatus.success;
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -90,24 +63,6 @@ class AuthService implements AbstractAuthService {
   @override
   Future<void> signOut() {
     return auth.signOut();
-  }
-
-  @override
-  StreamBuilder<User> getUserState() {
-    return StreamBuilder<User>(
-      stream: auth.userChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Hello');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Hello");
-        }
-
-        return Text('Hello ${auth.currentUser.displayName}');
-      },
-    );
   }
 }
 

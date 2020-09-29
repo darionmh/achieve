@@ -28,7 +28,7 @@ class _AddMilestoneListState extends State<AddMilestoneList> {
           widget.onUpdate(_milestones);
           FocusScope.of(context).unfocus();
         }),
-        onUpdate: (val) => setState(() => milestone.milestone = val),
+        onUpdate: (val) => setState(() => milestone.description = val),
       ));
     });
 
@@ -37,8 +37,8 @@ class _AddMilestoneListState extends State<AddMilestoneList> {
         single: children.length == 0,
         onClick: (context) => {
           setState(() {
-            if (_milestones.length == 0 || _milestones.last.milestone != '') {
-              _milestones.add(Milestone(done: false, milestone: ''));
+            if (_milestones.length == 0 || _milestones.last.description != '') {
+              _milestones.add(Milestone(done: false, description: ''));
               widget.onUpdate(_milestones);
               Scrollable.ensureVisible(context);
             }
