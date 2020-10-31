@@ -138,6 +138,7 @@ class _GoalCardState extends State<GoalCard> {
         isOpen = !isOpen;
       }),
       child: Card(
+        color: widget.goal.theme,
         child: Container(
           padding: EdgeInsets.all(12),
           child: Column(

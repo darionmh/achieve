@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:goald/add/reorderable_milestone_list.dart';
 import 'package:goald/components/are_you_sure.dart';
 import 'package:goald/components/clickable_text.dart';
+import 'package:goald/components/color_picker.dart';
 import 'package:goald/models/goal.dart';
 import 'package:goald/models/milestone.dart';
 import 'package:goald/service-locator.dart';
@@ -28,6 +29,7 @@ class _EditGoalState extends State<EditGoal> {
   var _endDate;
   TextEditingController _dateController = TextEditingController();
   var _milestoneList = <Milestone>[];
+  var _themeColor;
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _EditGoalState extends State<EditGoal> {
     _endDate = widget.goal.endDate;
     _dateController.text = dateFormat.format(_endDate ?? '');
     _milestoneList = widget.goal.milestones ?? <Milestone>[];
+    _themeColor = widget.goal.theme ?? primaryColor;
 
     super.initState();
   }
@@ -59,6 +62,7 @@ class _EditGoalState extends State<EditGoal> {
     widget.goal.description = _descriptionController.text;
     widget.goal.endDate = _endDate;
     widget.goal.milestones = _milestoneList;
+    widget.goal.theme = _themeColor;
 
     _goalService.update(widget.goal).then(
       (_) {
@@ -164,6 +168,10 @@ class _EditGoalState extends State<EditGoal> {
           child: Text('Edit goal', style: heading),
         ),
         Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Text('Details', style: subheading),
+        ),
+        Padding(
           padding: EdgeInsets.only(bottom: 10),
           child: TextField(
             decoration: InputDecoration(
@@ -208,6 +216,10 @@ class _EditGoalState extends State<EditGoal> {
           ),
         ),
         Padding(
+          padding: EdgeInsets.only(bottom: 8, top: 8),
+          child: Text('Milestones', style: subheading),
+        ),
+        Padding(
           padding: EdgeInsets.only(bottom: 4),
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -226,6 +238,17 @@ class _EditGoalState extends State<EditGoal> {
                 _buildAddMilestoneRow(),
               ],
             ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 4, top: 8),
+          child: Text('Goal theme', style: subheading),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: ColorPicker(
+            initialColor: _themeColor,
+            onChange: (color) => _themeColor = color,
           ),
         ),
         SizedBox(

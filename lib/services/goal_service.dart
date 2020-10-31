@@ -62,6 +62,7 @@ class GoalStore implements AbstractGoalService {
           ? Timestamp.fromDate(goal.dateCompleted)
           : null,
       'milestones': goal.milestones.map((e) => _mapMilestoneToObj(e)).toList(),
+      'theme': goal.theme.value
     };
   }
 

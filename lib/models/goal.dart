@@ -10,31 +10,33 @@ class Goal {
   bool complete;
   DateTime dateCompleted;
   List<Milestone> milestones;
+  Color theme;
 
-  Goal({
-    this.id,
-    @required this.title,
-    this.description,
-    this.endDate,
-    this.milestones,
-    this.complete = false,
-    this.dateCompleted,
-  });
+  Goal(
+      {this.id,
+      @required this.title,
+      this.description,
+      this.endDate,
+      this.milestones,
+      this.complete = false,
+      this.dateCompleted,
+      this.theme});
 
   static Goal fromSnapshot(QueryDocumentSnapshot docSnapshot) {
-    var goal =  Goal(
-        id: docSnapshot.reference.id,
-        title: docSnapshot.get('title'),
-        description: docSnapshot.get('goal'),
-        endDate: (docSnapshot.get('end_date') as Timestamp).toDate(),
-        complete: docSnapshot.get('complete'),
-        dateCompleted: docSnapshot.get('end_date') != null
-            ? (docSnapshot.get('end_date') as Timestamp).toDate()
-            : null,
-        milestones: (docSnapshot.get('milestones') as List<dynamic>)
-            .map((e) =>
-                Milestone(done: e['done'], description: e['description']))
-            .toList());
+    var goal = Goal(
+      id: docSnapshot.reference.id,
+      title: docSnapshot.get('title'),
+      description: docSnapshot.get('goal'),
+      endDate: (docSnapshot.get('end_date') as Timestamp).toDate(),
+      complete: docSnapshot.get('complete'),
+      dateCompleted: docSnapshot.get('end_date') != null
+          ? (docSnapshot.get('end_date') as Timestamp).toDate()
+          : null,
+      milestones: (docSnapshot.get('milestones') as List<dynamic>)
+          .map((e) => Milestone(done: e['done'], description: e['description']))
+          .toList(),
+      theme: Color(docSnapshot.get('theme')),
+    );
     return goal;
   }
 

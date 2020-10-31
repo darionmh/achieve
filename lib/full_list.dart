@@ -165,13 +165,9 @@ class _FullGoalListState extends State<FullGoalList> {
           ),
         ),
         Expanded(
-          child: AnimatedOpacity(
-            opacity: goals == null || goals.length == 0 ? 0 : 1,
-            duration: Duration(milliseconds: 500),
-            child: ListView(
-              shrinkWrap: true,
-              children: _buildCards(goals),
-            ),
+          child: ListView(
+            shrinkWrap: true,
+            children: _buildCards(goals),
           ),
         ),
       ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:goald/add/reorderable_milestone_list.dart';
 import 'package:goald/components/clickable_text.dart';
+import 'package:goald/components/color_picker.dart';
 import 'package:goald/models/goal.dart';
 import 'package:goald/models/milestone.dart';
 import 'package:goald/service-locator.dart';
@@ -27,6 +28,7 @@ class _AddGoalState extends State<AddGoal> {
   var _endDate;
   var _endDateString = '';
   var _milestoneList = <Milestone>[];
+  var _themeColor = primaryColor;
 
   var _titleError;
   var _endDateError;
@@ -46,11 +48,15 @@ class _AddGoalState extends State<AddGoal> {
         isSaving = true;
 
         _goalService
-            .add(Goal(
-                title: _title,
-                description: _description,
-                endDate: _endDate,
-                milestones: _milestoneList))
+            .add(
+          Goal(
+            title: _title,
+            description: _description,
+            endDate: _endDate,
+            milestones: _milestoneList,
+            theme: _themeColor,
+          ),
+        )
             .then(
           (_) {
             setState(() {
@@ -108,7 +114,9 @@ class _AddGoalState extends State<AddGoal> {
       });
   }
 
-  void addMilestone() {}
+  void _handleColorSelect(Color color) {
+    _themeColor = color;
+  }
 
   Widget _buildAddMilestoneRow() {
     return Padding(
@@ -164,6 +172,10 @@ class _AddGoalState extends State<AddGoal> {
           child: Text('Add goal', style: heading),
         ),
         Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Text('Details', style: subheading),
+        ),
+        Padding(
           padding: EdgeInsets.only(bottom: 10),
           child: TextField(
             decoration: InputDecoration(
@@ -209,6 +221,10 @@ class _AddGoalState extends State<AddGoal> {
           ),
         ),
         Padding(
+          padding: EdgeInsets.only(bottom: 8, top: 8),
+          child: Text('Milestones', style: subheading),
+        ),
+        Padding(
           padding: EdgeInsets.only(bottom: 4),
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -221,12 +237,24 @@ class _AddGoalState extends State<AddGoal> {
                 ReorderableMilestoneList(
                   milestoneList: _milestoneList,
                   onReorder: handleReorder,
-                  onUpdate: (i, val) => setState(() => _milestoneList[i].description = val),
+                  onUpdate: (i, val) =>
+                      setState(() => _milestoneList[i].description = val),
                   delete: (i) => setState(() => _milestoneList.removeAt(i)),
                 ),
                 _buildAddMilestoneRow(),
               ],
             ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 4, top: 8),
+          child: Text('Goal theme', style: subheading),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: ColorPicker(
+            initialColor: _themeColor,
+            onChange: _handleColorSelect,
           ),
         ),
         SizedBox(
