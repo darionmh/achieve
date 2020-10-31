@@ -1,11 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AbstractAuthService {
   Future<SignInStatus> signInWithEmail(String email, String password);
+
   Future<RegisterStatus> registerWithEmail(
       String email, String password, String displayName);
+
   User getUser();
+
   Future<void> signOut();
+
+  Future<String> updateProfile(String displayName, String email);
+
+  Future<String> changePassword(String newPassword);
+
+  Future<void> sendPasswordResetEmail(String email);
 }
 
 class AuthService implements AbstractAuthService {
@@ -42,6 +52,8 @@ class AuthService implements AbstractAuthService {
       await user.user.updateProfile(displayName: displayName);
       await auth.currentUser.reload();
 
+      await _userDoc().set({'displayName': displayName, 'email': email});
+
       return RegisterStatus.success;
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -63,6 +75,49 @@ class AuthService implements AbstractAuthService {
   @override
   Future<void> signOut() {
     return auth.signOut();
+  }
+
+  @override
+  Future<String> updateProfile(String displayName, String email) async {
+    if (displayName != auth.currentUser.displayName) {
+      await auth.currentUser.updateProfile(displayName: displayName);
+    }
+
+    if (email != auth.currentUser.email) {
+      try {
+        await auth.currentUser.updateEmail(email);
+      } catch (e) {
+        return (e as FirebaseAuthException).code;
+      }
+    }
+
+    await auth.currentUser.reload();
+
+    await _userDoc().set({'displayName': displayName, 'email': email});
+
+    return '';
+  }
+
+  @override
+  Future<String> changePassword(String newPassword) async {
+    try {
+      await auth.currentUser.updatePassword(newPassword);
+    } catch (e) {
+      return (e as FirebaseAuthException).code;
+    }
+
+    return '';
+  }
+
+  DocumentReference _userDoc() {
+    return FirebaseFirestore.instance
+        .collection('user')
+        .doc(getUser().uid);
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) {
+    auth.sendPasswordResetEmail(email: email);
   }
 }
 

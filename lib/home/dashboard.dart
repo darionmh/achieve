@@ -11,7 +11,8 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   AbstractGoalService _goalService = locator<AbstractGoalService>();
 
-  Widget _buildStatCard() {
+  Widget _buildStatCard(
+      title, goalsComplete, goalsTotal, milestonesComplete, milestonesTotal) {
     return Card(
       child: Container(
         padding: EdgeInsets.all(12),
@@ -19,7 +20,7 @@ class _DashboardState extends State<Dashboard> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              child: Text('September Stats', style: card_heading),
+              child: Text(title, style: card_heading),
               margin: EdgeInsets.only(bottom: 20),
             ),
             Container(
@@ -31,7 +32,7 @@ class _DashboardState extends State<Dashboard> {
                     style: card_body,
                   ),
                   Text(
-                    '0 / 5',
+                    '$goalsComplete / $goalsTotal',
                     style: card_body,
                   ),
                 ],
@@ -46,7 +47,7 @@ class _DashboardState extends State<Dashboard> {
                   style: card_body,
                 ),
                 Text(
-                  '0 / 100',
+                  '$milestonesComplete / $milestonesTotal',
                   style: card_body,
                 ),
               ],
@@ -66,9 +67,13 @@ class _DashboardState extends State<Dashboard> {
         children: [
           Container(
             margin: EdgeInsets.only(bottom: 12),
-            child: Text('Dashboard', style: subheading,),
+            child: Text(
+              'Dashboard',
+              style: subheading,
+            ),
           ),
-          _buildStatCard()
+          _buildStatCard('Last 30 days', 0, 0, 0, 0),
+          _buildStatCard('Last 12 months', 0, 0, 0, 0),
         ],
       ),
     );

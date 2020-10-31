@@ -5,9 +5,10 @@ class ClickableText extends StatelessWidget {
   final text;
   final VoidCallback onClick;
   final TextStyle style;
+  final bool centered;
 
   const ClickableText(
-      {Key key, @required this.text, @required this.onClick, this.margin, this.style})
+      {Key key, @required this.text, @required this.onClick, this.margin, this.style, this.centered = false})
       : super(key: key);
 
   @override
@@ -15,7 +16,7 @@ class ClickableText extends StatelessWidget {
     return Container(
       margin: margin,
       child: GestureDetector(
-        child: Text(text, style: style,),
+        child: Text(text, style: style, textAlign: centered ? TextAlign.center : TextAlign.left,),
         onTap: () => onClick(),
       ),
     );

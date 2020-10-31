@@ -22,8 +22,8 @@ class Goal {
   });
 
   static Goal fromSnapshot(QueryDocumentSnapshot docSnapshot) {
-    return Goal(
-        id: docSnapshot.id,
+    var goal =  Goal(
+        id: docSnapshot.reference.id,
         title: docSnapshot.get('title'),
         description: docSnapshot.get('goal'),
         endDate: (docSnapshot.get('end_date') as Timestamp).toDate(),
@@ -35,5 +35,11 @@ class Goal {
             .map((e) =>
                 Milestone(done: e['done'], description: e['description']))
             .toList());
+    return goal;
+  }
+
+  @override
+  String toString() {
+    return '{title: $title, description: $description, endDate: $endDate, milestones: $milestones, complete: $complete, dateComplete: $dateCompleted, id: $id}';
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:goald/add/reorderable_milestone_list.dart';
+import 'package:goald/components/are_you_sure.dart';
 import 'package:goald/components/clickable_text.dart';
 import 'package:goald/models/goal.dart';
 import 'package:goald/models/milestone.dart';
@@ -9,24 +10,35 @@ import 'package:goald/services/goal_service.dart';
 import 'package:goald/styles.dart';
 import 'package:intl/intl.dart';
 
-class AddGoal extends StatefulWidget {
-  final VoidCallback onFinish;
+class EditGoal extends StatefulWidget {
+  Goal goal;
 
-  const AddGoal({Key key, this.onFinish}) : super(key: key);
+  EditGoal({@required this.goal});
 
   @override
-  _AddGoalState createState() => _AddGoalState();
+  _EditGoalState createState() => _EditGoalState();
 }
 
-class _AddGoalState extends State<AddGoal> {
+class _EditGoalState extends State<EditGoal> {
   AbstractGoalService _goalService = locator<AbstractGoalService>();
   DateFormat dateFormat = DateFormat('MM/dd/yyyy');
 
-  var _title = '';
-  var _description = '';
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
   var _endDate;
-  var _endDateString = '';
+  TextEditingController _dateController = TextEditingController();
   var _milestoneList = <Milestone>[];
+
+  @override
+  void initState() {
+    _titleController.text = widget.goal.title;
+    _descriptionController.text = widget.goal.description;
+    _endDate = widget.goal.endDate;
+    _dateController.text = dateFormat.format(_endDate ?? '');
+    _milestoneList = widget.goal.milestones ?? <Milestone>[];
+
+    super.initState();
+  }
 
   var _titleError;
   var _endDateError;
@@ -36,38 +48,43 @@ class _AddGoalState extends State<AddGoal> {
   var _scrollController = ScrollController();
 
   void _save() {
-    setState(
-      () {
-        _validateTitle();
-        _validateDate();
+    _validateTitle();
+    _validateDate();
 
-        if (_titleError != null || _endDateError != null) return;
+    if (_titleError != null || _endDateError != null) return;
 
-        isSaving = true;
+    isSaving = true;
 
-        _goalService
-            .add(Goal(
-                title: _title,
-                description: _description,
-                endDate: _endDate,
-                milestones: _milestoneList))
-            .then(
-          (_) {
-            setState(() {
-              widget.onFinish();
-              isSaving = false;
-            });
-          },
-        );
+    widget.goal.title = _titleController.text;
+    widget.goal.description = _descriptionController.text;
+    widget.goal.endDate = _endDate;
+    widget.goal.milestones = _milestoneList;
+
+    _goalService.update(widget.goal).then(
+      (_) {
+        setState(() {
+          Navigator.pop(context);
+          isSaving = false;
+        });
       },
     );
+  }
+
+  void _delete() {
+    showAlertDialog(context, () {}, () {
+      _goalService.delete(widget.goal).then(
+        (_) {
+          Navigator.pop(context);
+        },
+      );
+    });
   }
 
   void _validateTitle() {
     setState(() {
       _titleError = null;
 
-      if (_title == '') {
+      if (_titleController.text == '') {
         _titleError = 'Title cannot be blank.';
       }
     });
@@ -76,22 +93,21 @@ class _AddGoalState extends State<AddGoal> {
   void _validateDate() {
     setState(() {
       _endDateError = null;
+      var endDateString = _dateController.text;
 
-      if (_endDateString == '') {
+      if (endDateString == '') {
         _endDateError = 'You must select an end date.';
       }
 
-      if (_endDateString != '') {
+      if (endDateString != '') {
         try {
-          _endDate = dateFormat.parse(_endDateString);
+          _endDate = dateFormat.parse(endDateString);
         } catch (e) {
           _endDateError = 'Date does not match format MM/DD/YYYY';
         }
       }
     });
   }
-
-  TextEditingController dateController = TextEditingController();
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -103,8 +119,7 @@ class _AddGoalState extends State<AddGoal> {
     if (picked != null && picked != _endDate)
       setState(() {
         _endDate = picked;
-        dateController.text = dateFormat.format(_endDate);
-        _endDateString = dateController.text;
+        _dateController.text = dateFormat.format(_endDate);
       });
   }
 
@@ -139,21 +154,6 @@ class _AddGoalState extends State<AddGoal> {
     );
   }
 
-  void handleReorder(item, dir) {
-    var oldIndex = _milestoneList.indexOf(item);
-    var newIndex = oldIndex + dir;
-
-    print('search for $item, $oldIndex $newIndex');
-    if (newIndex >= 0 && newIndex < _milestoneList.length) {
-      print('$oldIndex $newIndex');
-
-      setState(() {
-        _milestoneList.insert(newIndex, item);
-        _milestoneList.removeAt(oldIndex > newIndex ? oldIndex + 1 : oldIndex);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -161,7 +161,7 @@ class _AddGoalState extends State<AddGoal> {
       children: [
         Padding(
           padding: EdgeInsets.only(top: 25, bottom: 12),
-          child: Text('Add goal', style: heading),
+          child: Text('Edit goal', style: heading),
         ),
         Padding(
           padding: EdgeInsets.only(bottom: 10),
@@ -172,7 +172,7 @@ class _AddGoalState extends State<AddGoal> {
               border: new OutlineInputBorder(
                   borderSide: new BorderSide(color: primaryColor)),
             ),
-            onChanged: (val) => _title = val,
+            controller: _titleController,
             onEditingComplete: () => _validateTitle(),
           ),
         ),
@@ -187,13 +187,13 @@ class _AddGoalState extends State<AddGoal> {
               border: new OutlineInputBorder(
                   borderSide: new BorderSide(color: primaryColor)),
             ),
-            onChanged: (val) => _description = val,
+            controller: _descriptionController,
           ),
         ),
         Padding(
           padding: EdgeInsets.only(bottom: 10),
           child: TextField(
-            controller: dateController,
+            controller: _dateController,
             decoration: InputDecoration(
               errorText: _endDateError,
               labelText: 'End Date (MM/DD/YYYY)',
@@ -204,7 +204,6 @@ class _AddGoalState extends State<AddGoal> {
                 onPressed: () => _selectDate(context),
               ),
             ),
-            onChanged: (val) => _endDateString = val,
             onEditingComplete: () => _validateDate(),
           ),
         ),
@@ -220,8 +219,8 @@ class _AddGoalState extends State<AddGoal> {
               children: [
                 ReorderableMilestoneList(
                   milestoneList: _milestoneList,
-                  onReorder: handleReorder,
-                  onUpdate: (i, val) => setState(() => _milestoneList[i].description = val),
+                  onUpdate: (i, val) =>
+                      setState(() => _milestoneList[i].description = val),
                   delete: (i) => setState(() => _milestoneList.removeAt(i)),
                 ),
                 _buildAddMilestoneRow(),
@@ -236,13 +235,23 @@ class _AddGoalState extends State<AddGoal> {
             onPressed: isSaving ? null : () => _save(),
           ),
         ),
+        SizedBox(
+          width: double.infinity,
+          child: RaisedButton(
+            child: Text('DELETE'),
+            onPressed: () => _delete(),
+          ),
+        ),
         Container(
           child: ClickableText(
             margin: EdgeInsets.only(top: 10),
             text: 'CANCEL',
-            onClick: () => widget.onFinish(),
+            onClick: () => Navigator.pop(context),
           ),
           alignment: Alignment.center,
+        ),
+        Padding(
+          padding: EdgeInsets.all(12.5),
         ),
       ],
     );

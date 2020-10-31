@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:goald/add/add_goal.dart';
+import 'package:goald/event_emitter.dart';
 import 'package:goald/full_list.dart';
 import 'package:goald/home/dashboard.dart';
 import 'package:goald/home/recent.dart';
 import 'package:goald/home/upcoming.dart';
 import 'package:goald/models/goal.dart';
 import 'package:goald/navigation.dart';
+import 'package:goald/profile.dart';
 import 'package:goald/service-locator.dart';
 import 'package:goald/services/goal_service.dart';
 import 'package:goald/styles.dart';
@@ -19,8 +21,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   AbstractGoalService _goalService = locator<AbstractGoalService>();
+  EventEmitter homeCollapseGoalsEvent = new EventEmitter();
 
-  var _currentIndex = 1;
+  var _currentIndex = 0;
 
   Widget home;
 
@@ -28,6 +31,11 @@ class _HomeState extends State<Home> {
   void dispose() async {
     super.dispose();
     // await _authService.signOut();
+  }
+
+  void scrollToContext(BuildContext context) {
+//    print('scrolling ${context}');
+//    Scrollable.ensureVisible(context,);
   }
 
   Widget _buildHome(User user) {
@@ -42,22 +50,27 @@ class _HomeState extends State<Home> {
                 'Welcome back',
                 style: accent_text,
               ),
-              Text(user.displayName, style: heading),
+              Text(user?.displayName ?? '', style: heading),
             ],
           ),
         ),
-        Dashboard(),
+//        Dashboard(),
         StreamProvider<List<Goal>>(
           create: (_) => _goalService.upcomingGoals(),
           initialData: [],
           child: Upcoming(
             onClick: () => setState(() => _currentIndex = 1),
+            collapseGoalsEvent: homeCollapseGoalsEvent,
+            scrollToContext: scrollToContext,
           ),
         ),
         StreamProvider<List<Goal>>(
           create: (_) => _goalService.recentlyCompleted(),
           initialData: [],
-          child: RecentlyCompleted(),
+          child: RecentlyCompleted(
+            collapseGoalsEvent: homeCollapseGoalsEvent,
+            scrollToContext: scrollToContext,
+          ),
         ),
       ],
     );
@@ -77,6 +90,8 @@ class _HomeState extends State<Home> {
         return AddGoal(
           onFinish: () => setState(() => _currentIndex = 0),
         );
+      case 3:
+        return Profile();
     }
 
     return Center(

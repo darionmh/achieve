@@ -5,5 +5,10 @@ class Milestone {
   bool done;
   String description;
 
-  Milestone({this.done, this.description});
+  Milestone({this.done = false, this.description});
+
+  @override
+  String toString() {
+    return '{desc: $description, done: $done, id: $id}';
+  }
 }

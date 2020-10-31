@@ -115,6 +115,26 @@ class GoalStore implements AbstractGoalService {
             : event.docs.map((e) => Goal.fromSnapshot(e)).toList());
   }
 
+  Future<int> dashboardStats() async {
+    int thirtyDays = await _goalCollection().where('complete', isEqualTo: true).where(
+      'date_completed',
+      isGreaterThanOrEqualTo: Timestamp.fromDate(
+        DateTime.now().subtract(
+          Duration(days: 30),
+        ),
+      ),
+    ).snapshots().length;
+
+    int twelveMonths = await _goalCollection().where('complete', isEqualTo: true).where(
+      'date_completed',
+      isGreaterThanOrEqualTo: Timestamp.fromDate(
+        DateTime.now().subtract(
+          Duration(days: 365),
+        ),
+      ),
+    ).snapshots().length;
+  }
+
   CollectionReference _goalCollection() {
     return FirebaseFirestore.instance
         .collection('user')

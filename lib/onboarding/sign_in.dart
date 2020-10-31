@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goald/components/clickable_text.dart';
+import 'package:goald/onboarding/forgot_password.dart';
 import 'package:goald/onboarding/sign_up.dart';
 import 'package:goald/service-locator.dart';
 import 'package:goald/services/auth_service.dart';
@@ -15,23 +16,40 @@ class _SignInState extends State<SignIn> {
   var _email = '';
   var _password = '';
 
+  var emailError;
+  var passwordError;
+
   void _signIn() async {
     _authService.signInWithEmail(_email, _password).then((status) {
-      print(status);
-      switch (status) {
-        case SignInStatus.user_not_found:
-          break;
-        case SignInStatus.wrong_password:
-          break;
-        case SignInStatus.failed:
-          break;
-        case SignInStatus.success:
-          break;
-      }
+      setState(() {
+        emailError = null;
+        passwordError = null;
+
+        switch (status) {
+          case SignInStatus.user_not_found:
+            emailError = 'No account found with that email.';
+            break;
+          case SignInStatus.wrong_password:
+            passwordError = 'No account found with that email and password.';
+            break;
+          case SignInStatus.failed:
+            emailError = 'Can you double check that information?';
+            break;
+          case SignInStatus.success:
+            break;
+        }
+      });
     });
   }
 
-  void _forgot() {}
+  void _forgot() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ForgotPassword(),
+      ),
+    );
+  }
 
   void _signUp() {
     Navigator.push(
@@ -59,6 +77,7 @@ class _SignInState extends State<SignIn> {
           TextField(
             decoration: InputDecoration(
               labelText: 'email',
+              errorText: emailError,
               border: new OutlineInputBorder(
                   borderSide: new BorderSide(color: Colors.teal)),
               suffixIcon: Icon(Icons.alternate_email),
@@ -69,6 +88,7 @@ class _SignInState extends State<SignIn> {
             child: TextField(
               decoration: InputDecoration(
                 labelText: 'password',
+                errorText: passwordError,
                 border: new OutlineInputBorder(
                     borderSide: new BorderSide(color: Colors.teal)),
                 suffixIcon: Icon(Icons.lock_outline),

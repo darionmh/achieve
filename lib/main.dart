@@ -47,7 +47,12 @@ class _MyAppState extends State<MyApp> {
           toolbarHeight: 0,
         ),
         body: Container(
-          child: userState == null ? SignIn() : Home()
+          child: userState == null
+              ? SignIn()
+              : StreamProvider<User>(
+                  create: (_) => FirebaseAuth.instance.userChanges(),
+                  child: Home(),
+                ),
         ),
       ),
       theme: ThemeData(
@@ -71,7 +76,6 @@ class _MyAppState extends State<MyApp> {
 }
 
 class App extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
