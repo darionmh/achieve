@@ -34,8 +34,6 @@ class _HomeState extends State<Home> {
   }
 
   void scrollToContext(BuildContext context) {
-//    print('scrolling ${context}');
-//    Scrollable.ensureVisible(context,);
   }
 
   Widget _buildHome(User user) {
