@@ -56,16 +56,16 @@ class GoalStore implements AbstractGoalService {
   @override
   List<Goal> getOverdueGoals() {
     return _store.where((element) => element.complete == false
-        && element.endDate.isBefore(DateTime.now())
+        && element.endDate.isBefore(DateTime.now().subtract(Duration(days: 1)))
     ).toList();
   }
 
   @override
   List<Goal> getUpcomingGoals() {
     return _store.where((element) => element.complete == false
-        && element.endDate.isAfter(DateTime.now())
+        && element.endDate.isAfter(DateTime.now().subtract(Duration(days: 1)))
         && element.endDate.isBefore(DateTime.now().add(Duration(days: 30)))
-    ).toList();
+    ).take(5).toList();
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:goald/components/clickable_text.dart';
 import 'package:goald/service-locator.dart';
 import 'package:goald/services/auth_service.dart';
 import 'package:goald/services/profanity_filter.dart';
+import 'package:goald/styles.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -100,7 +101,15 @@ class _SignUpState extends State<SignUp> {
       body: Container(
         padding: EdgeInsets.all(15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Padding(
+              child: Text(
+                'Start achieving!',
+                style: subheading,
+              ),
+              padding: EdgeInsets.only(bottom: 12),
+            ),
             TextField(
               decoration: InputDecoration(
                 errorText: _displayNameError,
@@ -123,8 +132,8 @@ class _SignUpState extends State<SignUp> {
                 onChanged: (val) => _email = val,
               ),
               margin: EdgeInsets.only(
-                  top: _displayNameError == null ? 30 : 8,
-                  bottom: _emailError == null ? 30 : 8),
+                  top: 8,
+                  bottom: 8),
             ),
             Container(
               child: TextField(
@@ -138,7 +147,7 @@ class _SignUpState extends State<SignUp> {
                 obscureText: true,
                 onChanged: (val) => _password = val,
               ),
-              margin: EdgeInsets.only(bottom: _passwordError == null ? 30 : 8),
+              margin: EdgeInsets.only(bottom: 8),
             ),
             Container(
               child: TextField(
@@ -153,7 +162,7 @@ class _SignUpState extends State<SignUp> {
                 onChanged: (val) => _confirmPassword = val,
               ),
               margin: EdgeInsets.only(
-                  bottom: _confirmPasswordError == null ? 30 : 8),
+                  bottom: 8),
             ),
             SizedBox(
               width: double.infinity,
@@ -166,6 +175,7 @@ class _SignUpState extends State<SignUp> {
               margin: EdgeInsets.only(top: 10),
               text: 'Cancel',
               onClick: () => Navigator.of(context).pop(),
+              centered: true,
             )
           ],
         ),

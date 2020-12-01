@@ -24,7 +24,7 @@ class _HomeState extends State<Home> {
   AbstractGoalService _goalService = locator<AbstractGoalService>();
   EventEmitter homeCollapseGoalsEvent = new EventEmitter();
 
-  var _currentIndex = 2;
+  var _currentIndex = 0;
 
   Widget home;
 
