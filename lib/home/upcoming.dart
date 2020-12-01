@@ -1,11 +1,11 @@
-import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:goald/components/clickable_text.dart';
 import 'package:goald/components/goal_card.dart';
 import 'package:goald/event_emitter.dart';
 import 'package:goald/models/goal.dart';
+import 'package:goald/service-locator.dart';
+import 'package:goald/services/goal_service.dart';
 import 'package:goald/styles.dart';
-import 'package:provider/provider.dart';
 
 class Upcoming extends StatefulWidget {
   final VoidCallback onClick;
@@ -20,7 +20,24 @@ class Upcoming extends StatefulWidget {
 }
 
 class _UpcomingState extends State<Upcoming> {
-  var upcomingGoals = <Goal>[];
+  AbstractGoalService _goalService = locator<AbstractGoalService>();
+
+  var goals = <Goal>[];
+
+  var _unsub;
+
+  @override
+  void initState() {
+    goals = _goalService.getUpcomingGoals();
+    _unsub = _goalService.getStoreUpdateEvent().subscribe(() => setState(() => goals = _goalService.getUpcomingGoals()));
+
+    super.initState();
+  }
+
+  void dispose() {
+    _unsub();
+    super.dispose();
+  }
 
   List _buildUpcomingGoals(List<Goal> goals) {
     if (goals == null || goals.length == 0) return [
@@ -37,8 +54,6 @@ class _UpcomingState extends State<Upcoming> {
 
   @override
   Widget build(BuildContext context) {
-    var goals = Provider.of<List<Goal>>(context);
-
     return Container(
       margin: EdgeInsets.only(bottom: 25),
       child: Column(

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:goald/components/goal_card.dart';
 import 'package:goald/components/toggle.dart';
 import 'package:goald/models/goal.dart';
+import 'package:goald/service-locator.dart';
+import 'package:goald/services/goal_service.dart';
 import 'package:goald/styles.dart';
-import 'package:provider/provider.dart';
 
 class FullGoalList extends StatefulWidget {
   @override
@@ -11,6 +12,8 @@ class FullGoalList extends StatefulWidget {
 }
 
 class _FullGoalListState extends State<FullGoalList> {
+  AbstractGoalService _goalService = locator<AbstractGoalService>();
+
   bool filterComplete = true;
   bool filterInProgress = true;
 
@@ -20,10 +23,14 @@ class _FullGoalListState extends State<FullGoalList> {
   var sortField;
   var sortOrder;
 
+  List<Goal> goals = [];
+
   @override
   void initState() {
     sortField = sortFields[0];
     sortOrder = sortOrders[0];
+
+    goals = _goalService.getAllGoals();
 
     super.initState();
   }
@@ -75,7 +82,7 @@ class _FullGoalListState extends State<FullGoalList> {
 
   @override
   Widget build(BuildContext context) {
-    var goals = Provider.of<List<Goal>>(context);
+    // var goals = Provider.of<List<Goal>>(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

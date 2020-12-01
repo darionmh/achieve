@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:goald/event_emitter.dart';
 import 'package:goald/models/goal.dart';
 import 'package:goald/models/milestone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,21 +13,73 @@ abstract class AbstractGoalService {
   Stream<List<Goal>> allGoals();
   Stream<List<Goal>> upcomingGoals();
   Stream<List<Goal>> recentlyCompleted();
+
+  List<Goal> getAllGoals();
+  List<Goal> getUpcomingGoals();
+  List<Goal> getOverdueGoals();
+  List<Goal> getRecentlyCompletedGoals();
+  Future<void> initData();
+  EventEmitter getStoreUpdateEvent();
 }
 
 class GoalStore implements AbstractGoalService {
   AbstractAuthService _authService;
   FirebaseFirestore firestore;
   FirebaseAnalytics analytics;
+  EventEmitter _storeUpdateEvent;
+
+  List<Goal> _store;
 
   GoalStore() {
     _authService = locator<AbstractAuthService>();
     firestore = FirebaseFirestore.instance;
     analytics = FirebaseAnalytics();
+    _storeUpdateEvent = EventEmitter();
+  }
+
+  EventEmitter getStoreUpdateEvent(){
+    return _storeUpdateEvent;
+  }
+
+  Future<void> initData() async {
+    var res = await _goalCollection().get();
+    _store = (res.docs == null ? [] : res.docs).map((e) => Goal.fromSnapshot(e)).toList();
+    print('done initing data');
+  }
+
+  @override
+  List<Goal> getAllGoals() {
+    return _store;
+  }
+
+  @override
+  List<Goal> getOverdueGoals() {
+    return _store.where((element) => element.complete == false
+        && element.endDate.isBefore(DateTime.now())
+    ).toList();
+  }
+
+  @override
+  List<Goal> getUpcomingGoals() {
+    return _store.where((element) => element.complete == false
+        && element.endDate.isAfter(DateTime.now())
+        && element.endDate.isBefore(DateTime.now().add(Duration(days: 30)))
+    ).toList();
+  }
+
+  @override
+  List<Goal> getRecentlyCompletedGoals() {
+    return _store.where((element) => element.complete == true
+        && element.dateCompleted != null
+        && element.dateCompleted.isAfter(DateTime.now().subtract(Duration(days: 30)))
+    ).toList();
   }
 
   @override
   Future<void> add(Goal goal) {
+    _store.add(goal);
+    _storeUpdateEvent.emit();
+
     return _goalCollection()
         .add(_mapGoalToObj(goal))
         .catchError((err) => analytics.logEvent(name: 'add_goal_failed'))
@@ -35,6 +88,9 @@ class GoalStore implements AbstractGoalService {
 
   @override
   Future<void> delete(Goal goal) {
+    _store.remove(goal);
+    _storeUpdateEvent.emit();
+
     return _goalCollection()
         .doc(goal.id)
         .delete()
@@ -44,6 +100,11 @@ class GoalStore implements AbstractGoalService {
 
   @override
   Future<void> update(Goal goal) {
+    int index = _store.indexWhere((element) => element.id == goal.id);
+    _store.removeAt(index);
+    _store.insert(index, goal);
+    _storeUpdateEvent.emit();
+
     return _goalCollection()
         .doc(goal.id)
         .update(_mapGoalToObj(goal))

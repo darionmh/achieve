@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:goald/components/clickable_text.dart';
 import 'package:goald/components/goal_card.dart';
 import 'package:goald/event_emitter.dart';
 import 'package:goald/models/goal.dart';
 import 'package:goald/service-locator.dart';
 import 'package:goald/services/goal_service.dart';
 import 'package:goald/styles.dart';
-import 'package:provider/provider.dart';
 
-class RecentlyCompleted extends StatefulWidget {
+class Overdue extends StatefulWidget {
   EventEmitter collapseGoalsEvent;
   Function(BuildContext) scrollToContext;
 
-  RecentlyCompleted({this.collapseGoalsEvent, this.scrollToContext});
+  Overdue(
+      {this.collapseGoalsEvent, this.scrollToContext});
 
   @override
-  _RecentlyCompletedState createState() => _RecentlyCompletedState();
+  _OverdueState createState() => _OverdueState();
 }
 
-class _RecentlyCompletedState extends State<RecentlyCompleted> {
+class _OverdueState extends State<Overdue> {
   AbstractGoalService _goalService = locator<AbstractGoalService>();
+
   var goals = <Goal>[];
+
   var _unsub;
 
   @override
-  void initState(){
-    goals = _goalService.getRecentlyCompletedGoals();
-    print('recent $goals');
-    _unsub = _goalService.getStoreUpdateEvent().subscribe(() => setState(() => goals = _goalService.getRecentlyCompletedGoals()));
+  void initState() {
+    goals = _goalService.getOverdueGoals();
+    _unsub = _goalService.getStoreUpdateEvent().subscribe(() => setState(() => goals = _goalService.getOverdueGoals()));
 
     super.initState();
   }
@@ -36,8 +38,8 @@ class _RecentlyCompletedState extends State<RecentlyCompleted> {
     super.dispose();
   }
 
-  List _buildRecentGoals(goals) {
-    if (goals == null) return [];
+  List _buildOverdueGoals(List<Goal> goals) {
+    if (goals == null || goals.length == 0) return [];
 
     return goals
         .map((e) => GoalCard(
@@ -55,16 +57,22 @@ class _RecentlyCompletedState extends State<RecentlyCompleted> {
     return Container(
       margin: EdgeInsets.only(bottom: 25),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             margin: EdgeInsets.only(bottom: 12),
-            child: Text(
-              'Recently Completed',
-              style: subheading,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  'Overdue',
+                  style: subheading,
+                ),
+              ],
             ),
           ),
-          ..._buildRecentGoals(goals)
+          ..._buildOverdueGoals(goals)
         ],
       ),
     );

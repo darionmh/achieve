@@ -29,8 +29,8 @@ class Goal {
       description: docSnapshot.get('goal'),
       endDate: (docSnapshot.get('end_date') as Timestamp).toDate(),
       complete: docSnapshot.get('complete'),
-      dateCompleted: docSnapshot.get('end_date') != null
-          ? (docSnapshot.get('end_date') as Timestamp).toDate()
+      dateCompleted: docSnapshot.get('date_completed') != null
+          ? (docSnapshot.get('date_completed') as Timestamp).toDate()
           : null,
       milestones: (docSnapshot.get('milestones') as List<dynamic>)
           .map((e) => Milestone(done: e['done'], description: e['description']))

@@ -25,16 +25,17 @@ class _GoalCardState extends State<GoalCard> {
   final DateFormat formatter = DateFormat('MMM dd, yyyy');
   AbstractGoalService _goalService = locator<AbstractGoalService>();
   bool isOpen = false;
-  var id;
+  var _unsub;
 
   void initState() {
-    id = widget.collapseEvent?.subscribe(() => setState(() => isOpen = false));
+    _unsub = widget.collapseEvent?.subscribe(() => setState(() => isOpen = false));
 
     super.initState();
   }
 
   void dispose() {
-    widget.collapseEvent?.unsubscribe(id);
+    if(_unsub != null)
+      _unsub();
 
     super.dispose();
   }

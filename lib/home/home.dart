@@ -4,6 +4,7 @@ import 'package:goald/add/add_goal.dart';
 import 'package:goald/event_emitter.dart';
 import 'package:goald/full_list.dart';
 import 'package:goald/home/dashboard.dart';
+import 'package:goald/home/overdue.dart';
 import 'package:goald/home/recent.dart';
 import 'package:goald/home/upcoming.dart';
 import 'package:goald/models/goal.dart';
@@ -27,8 +28,18 @@ class _HomeState extends State<Home> {
 
   Widget home;
 
+  var _isLoading = true;
+
+  @override
+  void initState() {
+    _goalService.initData().then((res) => setState(() => _isLoading = false));
+    super.initState();
+  }
+
   @override
   void dispose() async {
+    homeCollapseGoalsEvent.destroy();
+
     super.dispose();
     // await _authService.signOut();
   }
@@ -53,37 +64,33 @@ class _HomeState extends State<Home> {
           ),
         ),
 //        Dashboard(),
-        StreamProvider<List<Goal>>(
-          create: (_) => _goalService.upcomingGoals(),
-          initialData: [],
-          child: Upcoming(
-            onClick: () => setState(() => _currentIndex = 1),
-            collapseGoalsEvent: homeCollapseGoalsEvent,
-            scrollToContext: scrollToContext,
-          ),
+        Overdue(
+          collapseGoalsEvent: homeCollapseGoalsEvent,
+          scrollToContext: scrollToContext,
         ),
-        StreamProvider<List<Goal>>(
-          create: (_) => _goalService.recentlyCompleted(),
-          initialData: [],
-          child: RecentlyCompleted(
-            collapseGoalsEvent: homeCollapseGoalsEvent,
-            scrollToContext: scrollToContext,
-          ),
+        Upcoming(
+          onClick: () => setState(() => _currentIndex = 1),
+          collapseGoalsEvent: homeCollapseGoalsEvent,
+          scrollToContext: scrollToContext,
+        ),
+        RecentlyCompleted(
+          collapseGoalsEvent: homeCollapseGoalsEvent,
+          scrollToContext: scrollToContext,
         ),
       ],
     );
   }
 
   Widget _getCurrentPage(User user) {
+    if(_isLoading) {
+      return Container();
+    }
+
     switch (_currentIndex) {
       case 0:
         return _buildHome(user);
       case 1:
-        return StreamProvider<List<Goal>>(
-          create: (_) => _goalService.allGoals(),
-          initialData: [],
-          child: FullGoalList(),
-        );
+        return FullGoalList();
       case 2:
         return AddGoal(
           onFinish: () => setState(() => _currentIndex = 0),
