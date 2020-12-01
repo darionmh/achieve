@@ -37,10 +37,13 @@ class _ReorderableMilestoneListState extends State<ReorderableMilestoneList> {
 
       rows.add(
         ReorderableMilestoneTile(
+          key: Key(e.id),
           milestone: e,
           onReorder: (item, dir) => widget.onReorder(item, dir),
           onUpdate: (val) => widget.onUpdate(i, val),
           delete: () => widget.delete(i),
+          isFirst: i == 0,
+          isLast: i == widget.milestoneList.length - 1
         ),
       );
 

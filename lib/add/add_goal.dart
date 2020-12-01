@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:goald/add/milestone_list.dart';
 import 'package:goald/add/reorderable_milestone_list.dart';
 import 'package:goald/components/clickable_text.dart';
 import 'package:goald/components/color_picker.dart';
@@ -152,13 +151,16 @@ class _AddGoalState extends State<AddGoal> {
     var oldIndex = _milestoneList.indexOf(item);
     var newIndex = oldIndex + dir;
 
-    print('search for $item, $oldIndex $newIndex');
+    // print('search for $item, $oldIndex $newIndex');
     if (newIndex >= 0 && newIndex < _milestoneList.length) {
-      print('$oldIndex $newIndex');
+      print('swap $oldIndex $newIndex');
 
       setState(() {
-        _milestoneList.insert(newIndex, item);
-        _milestoneList.removeAt(oldIndex > newIndex ? oldIndex + 1 : oldIndex);
+        var a = _milestoneList[oldIndex];
+        var b = _milestoneList[newIndex];
+
+        _milestoneList[oldIndex] = b;
+        _milestoneList[newIndex] = a;
       });
     }
   }
@@ -235,15 +237,16 @@ class _AddGoalState extends State<AddGoal> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Column(
               children: [
-                MilestoneList(
+                ReorderableMilestoneList(
                   milestoneList: _milestoneList,
-                  onUpdate: (id, val) {
-                    print('updating $id');
-                    setState(() => _milestoneList.firstWhere((element) => element.id == id).description = val);
+                  onReorder: handleReorder,
+                  onUpdate: (i, val) {
+                    print('updating $i');
+                    setState(() => _milestoneList[i].description = val);
                   },
-                  delete: (id) {
-                    print('attemping to delete $id');
-                    setState(() => _milestoneList.removeWhere((element) => element.id == id));
+                  delete: (i) {
+                    print('attemping to delete $i');
+                    setState(() => _milestoneList.removeAt(i));
                   },
                 ),
                 _buildAddMilestoneRow(),
