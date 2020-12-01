@@ -18,6 +18,7 @@ abstract class AbstractGoalService {
   List<Goal> getUpcomingGoals();
   List<Goal> getOverdueGoals();
   List<Goal> getRecentlyCompletedGoals();
+  List<Milestone> getMilestonesForGoal(Goal goal);
   Future<void> initData();
   EventEmitter getStoreUpdateEvent();
 }
@@ -73,6 +74,11 @@ class GoalStore implements AbstractGoalService {
         && element.dateCompleted != null
         && element.dateCompleted.isAfter(DateTime.now().subtract(Duration(days: 30)))
     ).toList();
+  }
+
+  @override
+  List<Milestone> getMilestonesForGoal(Goal goal) {
+    return _store.firstWhere((element) => element.id == goal.id).milestones;
   }
 
   @override

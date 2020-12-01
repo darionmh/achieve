@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:goald/add/milestone_list.dart';
 import 'package:goald/add/reorderable_milestone_list.dart';
 import 'package:goald/components/clickable_text.dart';
 import 'package:goald/components/color_picker.dart';
@@ -234,12 +235,16 @@ class _AddGoalState extends State<AddGoal> {
                 borderRadius: BorderRadius.all(Radius.circular(5))),
             child: Column(
               children: [
-                ReorderableMilestoneList(
+                MilestoneList(
                   milestoneList: _milestoneList,
-                  onReorder: handleReorder,
-                  onUpdate: (i, val) =>
-                      setState(() => _milestoneList[i].description = val),
-                  delete: (i) => setState(() => _milestoneList.removeAt(i)),
+                  onUpdate: (id, val) {
+                    print('updating $id');
+                    setState(() => _milestoneList.firstWhere((element) => element.id == id).description = val);
+                  },
+                  delete: (id) {
+                    print('attemping to delete $id');
+                    setState(() => _milestoneList.removeWhere((element) => element.id == id));
+                  },
                 ),
                 _buildAddMilestoneRow(),
               ],
