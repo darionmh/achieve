@@ -25,14 +25,23 @@ class _FullGoalListState extends State<FullGoalList> {
 
   List<Goal> goals = [];
 
+  var _unsub;
+
   @override
   void initState() {
     sortField = sortFields[0];
     sortOrder = sortOrders[0];
 
     goals = _goalService.getAllGoals();
+    _unsub = _goalService.getStoreUpdateEvent().subscribe(() => setState(() => goals = _goalService.getAllGoals()));
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _unsub();
+    super.dispose();
   }
 
   void _toggleFilterComplete() {

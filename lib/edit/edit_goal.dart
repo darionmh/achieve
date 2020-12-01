@@ -127,6 +127,24 @@ class _EditGoalState extends State<EditGoal> {
       });
   }
 
+  void handleReorder(item, dir) {
+    var oldIndex = _milestoneList.indexOf(item);
+    var newIndex = oldIndex + dir;
+
+    // print('search for $item, $oldIndex $newIndex');
+    if (newIndex >= 0 && newIndex < _milestoneList.length) {
+      print('swap $oldIndex $newIndex');
+
+      setState(() {
+        var a = _milestoneList[oldIndex];
+        var b = _milestoneList[newIndex];
+
+        _milestoneList[oldIndex] = b;
+        _milestoneList[newIndex] = a;
+      });
+    }
+  }
+
   void addMilestone() {}
 
   Widget _buildAddMilestoneRow() {
@@ -234,6 +252,7 @@ class _EditGoalState extends State<EditGoal> {
                   onUpdate: (i, val) =>
                       setState(() => _milestoneList[i].description = val),
                   delete: (i) => setState(() => _milestoneList.removeAt(i)),
+                  onReorder: handleReorder,
                 ),
                 _buildAddMilestoneRow(),
               ],

@@ -92,6 +92,7 @@ class _GoalCardState extends State<GoalCard> {
           children: widget.goal.milestones
               .map(
                 (e) => Row(
+                  key: Key(e.id),
                   children: [
                     GestureDetector(
                       onTap: () => _toggleMilestoneComplete(e),
