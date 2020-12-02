@@ -39,9 +39,7 @@ class _HomeState extends State<Home> {
   @override
   void dispose() async {
     homeCollapseGoalsEvent.destroy();
-
     super.dispose();
-    // await _authService.signOut();
   }
 
   void scrollToContext(BuildContext context) {
