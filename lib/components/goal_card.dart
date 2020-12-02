@@ -28,14 +28,14 @@ class _GoalCardState extends State<GoalCard> {
   var _unsub;
 
   void initState() {
-    _unsub = widget.collapseEvent?.subscribe(() => setState(() => isOpen = false));
+    _unsub =
+        widget.collapseEvent?.subscribe(() => setState(() => isOpen = false));
 
     super.initState();
   }
 
   void dispose() {
-    if(_unsub != null)
-      _unsub();
+    if (_unsub != null) _unsub();
 
     super.dispose();
   }
@@ -62,7 +62,7 @@ class _GoalCardState extends State<GoalCard> {
       isOpen = false;
       widget.goal.complete = !widget.goal.complete;
 
-      if(widget.goal.complete) {
+      if (widget.goal.complete) {
         widget.goal.dateCompleted = DateTime.now();
       }
 
@@ -91,21 +91,31 @@ class _GoalCardState extends State<GoalCard> {
         child: Column(
           children: widget.goal.milestones
               .map(
-                (e) => Row(
-                  key: Key(e.id),
-                  children: [
-                    GestureDetector(
-                      onTap: () => _toggleMilestoneComplete(e),
-                      child: Icon(
-                        e.done == true ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                        color: Colors.white,
-                      ),
+                (e) => GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => _toggleMilestoneComplete(e),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 8, bottom: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      key: Key(e.id),
+                      children: [
+                        GestureDetector(
+                          onTap: () => _toggleMilestoneComplete(e),
+                          child: Icon(
+                            e.done == true
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_unchecked,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text(e.description, style: card_body),
+                        )
+                      ],
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text(e.description, style: card_body),
-                    )
-                  ],
+                  ),
                 ),
               )
               .toList(),
@@ -131,10 +141,9 @@ class _GoalCardState extends State<GoalCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => setState(() {
-        if(!isOpen) {
+        if (!isOpen) {
           widget.collapseEvent?.emit();
-          if(widget.onTap != null)
-            widget.onTap(context);
+          if (widget.onTap != null) widget.onTap(context);
         }
 
         isOpen = !isOpen;
@@ -177,7 +186,9 @@ class _GoalCardState extends State<GoalCard> {
                 ),
               if (isOpen)
                 ClickableText(
-                  text: widget.goal.complete ? 'Mark In Progress' : 'Mark Complete',
+                  text: widget.goal.complete
+                      ? 'Mark In Progress'
+                      : 'Mark Complete',
                   onClick: () => _toggleGoalComplete(),
                   style: card_body,
                   margin: EdgeInsets.only(top: 10),
